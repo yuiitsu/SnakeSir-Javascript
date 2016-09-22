@@ -8,7 +8,25 @@
     <script type="text/javascript" src="scripts/snakesir.js"></script>
 </head>
 <body>
-    <canvas id="canvas" class="canvas"></canvas>
+    <div id="map">
+        <canvas id="canvas" class="canvas"></canvas>
+        <div id="control" class="control_box">
+            <div class="control control_up" id="control_up" data-direction="u">上</div>
+            <div class="control control_down" id="control_down" data-direction="d">下</div>
+            <div class="control control_left" id="control_left" data-direction="l">左</div>
+            <div class="control control_right" id="control_right" data-direction="r">右</div>
+        </div>
+    </div>
+    <div class="count_down">
+        <h1 id="count_down">3</h1>
+    </div>
+    <div class="start_box" id="start_box">
+        <div class="start">
+            <h1 class="logo">Snake Sir I</h1>
+            <h4>Level. 1</h4>
+            <h2 id="start">Start</h2>
+        </div>
+    </div>
     <script type="text/javascript">
         SnakeSir.init('canvas');
     </script>
