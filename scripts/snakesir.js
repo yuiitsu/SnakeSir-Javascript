@@ -65,6 +65,12 @@ var SnakeSir = {
      */
     initSnake: function() {
 
+        this.snake = [];
+        this.foodPosition = {};
+        this.direction = 'r';
+        this.gaming = false;
+        this.getFood = false;
+
         var startPosition = {
             'x': 100,
             'y': 100
@@ -140,7 +146,7 @@ var SnakeSir = {
         var count = 1;
         var o = $('#count_down');
 
-        o.text(count);
+        o.text(count).show();
         var timer = setInterval(function() {
             if (count > 0) {
                 count--;
@@ -217,6 +223,7 @@ var SnakeSir = {
 
         var _this = this;
         var speed = this.defaultSpeed;
+        var gameOverStatus = false;
         var run = function() {
 
             if (speed <= 0) {
@@ -226,25 +233,32 @@ var SnakeSir = {
                 if (speed == _this.defaultSpeed) {
                     // 下一点位置
                     var nextPosition = _this.getNextPosition();
-                    // 在蛇头前增加一个蛇身
-                    _this.snake.push(nextPosition);
-                    // 蛇头添加新蛇头
-                    _this.drawSnakeBody(nextPosition.x, nextPosition.y);
-                    // 检查是否吃到食物
-                    _this.eat(nextPosition);
-                    // 清除蛇尾
-                    if (!_this.getFood) {
-                      // 从身蛇栈尾移除一个蛇身
-                      var snakeLastBody = _this.snake.shift();
-                      _this.removeSnakeBody(snakeLastBody.x, snakeLastBody.y);
-                    } else {
-                        _this.getFood = false;
+                    // 检测game over
+                    gameOverStatus = _this.checkGameOver(nextPosition);
+                    if (!gameOverStatus) {
+                        // 在蛇头前增加一个蛇身
+                        _this.snake.push(nextPosition);
+                        // 蛇头添加新蛇头
+                        _this.drawSnakeBody(nextPosition.x, nextPosition.y);
+                        // 检查是否吃到食物
+                        _this.eat(nextPosition);
+                        // 清除蛇尾
+                        if (!_this.getFood) {
+                            // 从身蛇栈尾移除一个蛇身
+                            var snakeLastBody = _this.snake.shift();
+                            _this.removeSnakeBody(snakeLastBody.x, snakeLastBody.y);
+                        } else {
+                            _this.getFood = false;
+                        }
                     }
+
                 }
                 speed--;
             }
 
-            requestAnimationFrame(run);
+            if (!gameOverStatus) {
+                requestAnimationFrame(run);
+            }
         };
 
         requestAnimationFrame(run);
@@ -295,7 +309,7 @@ var SnakeSir = {
         // 监听开始
         $('#start').click(function() {
             $('#map').show();
-            $('#start_box').addClass('start_box_hidden');
+            $('#start_box').removeClass("start_box_show").addClass('start_box_hidden');
             _this.countDown();
         });
 
@@ -318,6 +332,37 @@ var SnakeSir = {
                 action(direction);
             });
         });
+    },
+
+    /**
+     * 检测game over
+     * @param snakeHeadPosition 位置
+     */
+    checkGameOver: function(snakeHeadPosition) {
+
+        var status = false;
+        for (var i in this.snake) {
+            if (snakeHeadPosition.x == this.snake[i].x && snakeHeadPosition.y == this.snake[i].y) {
+                // game over
+                status = true;
+                // 显示失败界面
+                this.gameOver();
+                break;
+            }
+        }
+
+        return status;
+    },
+
+    /**
+     * 游戏结束
+     */
+    gameOver: function() {
+
+        $('#logo').text('Game Over');
+        $('#start_box').removeClass('start_box_hidden').addClass('start_box_show');
+        //this.
+        this.initSnake();
     },
 
     /**
